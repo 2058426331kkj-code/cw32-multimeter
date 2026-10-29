@@ -1,0 +1,14 @@
+# Keil build output, generated checks and local backups
+/Objects/
+/Listings/
+*.uvguix.*
+*.uvgui.*
+*.bak
+*.Bak
+*.tmp
+*.log
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+.DS_Store
