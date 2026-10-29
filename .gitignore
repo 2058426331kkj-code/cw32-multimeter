@@ -12,3 +12,12 @@
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Altium generated output and local history
+History/
+__Previews/
+Project Logs for */
+Project Outputs for */
+*.PrjPcbStructure
+*.SchDocPreview
+*.PcbDocPreview

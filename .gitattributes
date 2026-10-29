@@ -1,2 +1,9 @@
 # Preserve original bytes and line endings, including GBK source comments.
 * -text
+
+# Altium documents and original archive are binary assets.
+*.schdoc binary
+*.pcbdoc binary
+*.SchDoc binary
+*.PcbDoc binary
+*.zip binary
