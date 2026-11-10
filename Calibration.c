@@ -179,9 +179,34 @@ static uint32_t CalibratedValue(uint32_t code, float slope, float offset)
   return (uint32_t)(value + 0.5f);
 }
 
+/* 按本板实测偏差补偿，value和补偿量的单位均为0.01V。
+ * 区间依据补偿前的板子读数划分：左闭右开，边界使用较高档补偿。
+ * 0读数保持0；非零且小于2V加0.04V，2~4V加0.05V，
+ * 4~5V加0.06V，5~6V加0.07V，6~8V加0.08V，8V起加0.10V。
+ * 11V以上尚无实测数据，按用户要求延用0.10V，不表示该段精度已验证。
+ * 每次只对新换算值补偿一次，不修改ADC原始码或Flash中的标定点。
+ * 分段常量在边界有0.01~0.02V补偿台阶；本表不做插值或自动拟合。
+ */
+static uint32_t CompensateVoltage(uint32_t value)
+{
+  uint32_t correction;
+  if (value == 0UL) return 0UL;
+  if (value < 200UL) correction = 4UL;
+  else if (value < 400UL) correction = 5UL;
+  else if (value < 500UL) correction = 6UL;
+  else if (value < 600UL) correction = 7UL;
+  else if (value < 800UL) correction = 8UL;
+  else correction = 10UL;
+
+  /* 先检查剩余显示空间，防止加法越界或超过三位显示上限99.9V。 */
+  if (value >= 9990UL - correction) return 9990UL;
+  return value + correction;
+}
+
 uint32_t Calibration_Voltage(uint32_t code)
 {
-  return CalibratedValue(code, K, V_Offset);
+  /* 正常模式和电压标定模式共用此结果；电流换算不加电压补偿。 */
+  return CompensateVoltage(CalibratedValue(code, K, V_Offset));
 }
 uint32_t Calibration_Current(uint32_t code)
 {
